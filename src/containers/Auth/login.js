@@ -7,39 +7,64 @@ import { FormattedMessage } from 'react-intl';
 import { divide } from 'lodash';
 import UserService from '../../services/UserService';
 
-
 class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
             username: '',
-            password: ''
-        }
+            password: '',
+            successMessage: '',
+            errMessage: ''
+        };
     }
 
-
-    handleOnChangeUserName = (Event) => {
+    handleOnChangeUserName = (event) => {
         this.setState({
-            username: Event.target.value
-        })
-
+            username: event.target.value
+        });
     }
-    handleOnChangePassWord = (Event) => {
+
+    handleOnChangePassWord = (event) => {
         this.setState({
-            password: Event.target.value
-        })
-
+            password: event.target.value
+        });
     }
-    handleLogin = async() => {
-        console.log(this.state.username + '  :  ', this.state.password)
-        console.log(this.state)
+
+    handleLogin = async () => {
+        this.setState({
+            successMessage: '',
+            errMessage: ''
+        });
         try {
-            await UserService.handleLogin(this.state.username,this.state.password);
+            // Gửi yêu cầu đăng nhập tới backend
+            const response = await UserService.handleLogin(this.state.username, this.state.password);
+            
+            // Kiểm tra phản hồi từ API
+            if (response && response.data) {
+                if (response.data.errcode === 0) {
+                    // Đăng nhập thành công
+                    this.props.userLoginSuccess(response.data.user);  // Sử dụng dữ liệu từ phản hồi server
+                    this.setState({
+                        successMessage: response.data.message,
+                    });
+                } else {
+                    // Đăng nhập thất bại
+                    this.setState({
+                        errMessage: response.data.message || 'Đăng nhập thất bại'
+                    });
+                }
+            }
         } catch (error) {
-            console.log(error);
+            // Xử lý lỗi nếu có từ server
+            if (error.response && error.response.data) {
+                this.setState({
+                    errMessage: error.response.data.message || 'Có lỗi xảy ra'
+                });
+            }
+            console.log('Lỗi:', error.response);
         }
-       
     }
+
     render() {
         return (
             <div className='login-background'>
@@ -48,23 +73,36 @@ class Login extends Component {
                         <div className='col-12 text-login'>Login</div>
                         <div className='col-12 form-group login-input'>
                             <label>Username:</label>
-                            <input type='text' className='form-control ' placeholder='Enter your username'
+                            <input
+                                type='text'
+                                className='form-control'
+                                placeholder='Enter your username'
                                 value={this.state.username}
-                                onChange={(event) => this.handleOnChangeUserName(event)} />
+                                onChange={this.handleOnChangeUserName}
+                            />
                         </div>
                         <div className='col-12 form-group login-input'>
-                            <label>Password :</label>
+                            <label>Password:</label>
                             <div className='custom-input-password'>
-                                <input type='password' className='form-control ' placeholder='Enter your password'
+                                <input
+                                    type='password'
+                                    className='form-control'
+                                    placeholder='Enter your password'
                                     value={this.state.password}
-                                    onChange={(event) => this.handleOnChangePassWord(event)} />
-                                <i class="fa-regular fa-eye"></i>
+                                    onChange={this.handleOnChangePassWord}
+                                />
+                                <i className="fa-regular fa-eye"></i>
                             </div>
                         </div>
-                        <div className='col-12 mt-3'>
-                            <button className='btn-login' onClick={() => { this.handleLogin() }}>Login</button>
+                        <div className='col-12' style={{ color: 'green' }}>
+                            {this.state.successMessage}  {/* Hiển thị thông báo thành công */}
                         </div>
-
+                        <div className='col-12' style={{ color: 'red' }}>
+                            {this.state.errMessage}  {/* Hiển thị thông báo lỗi */}
+                        </div>
+                        <div className='col-12 mt-3'>
+                            <button className='btn-login' onClick={this.handleLogin}>Login</button>
+                        </div>
                         <div className='col-12 mt-3 forgot-password'>
                             <span>Forgot your password?</span>
                         </div>
@@ -72,13 +110,13 @@ class Login extends Component {
                             <span className='text-center'>Or login with:</span>
                         </div>
                         <div className='col-12 social-login'>
-                            <i class="fa-brands fa-google google"></i>
-                            <i class="fa-brands fa-facebook-f facebook"></i>
+                            <i className="fa-brands fa-google google"></i>
+                            <i className="fa-brands fa-facebook-f facebook"></i>
                         </div>
                     </div>
                 </div>
             </div>
-        )
+        );
     }
 }
 
@@ -91,8 +129,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         navigate: (path) => dispatch(push(path)),
-        adminLoginSuccess: (adminInfo) => dispatch(actions.adminLoginSuccess(adminInfo)),
-        adminLoginFail: () => dispatch(actions.adminLoginFail()),
+        userLoginFail: () => dispatch(actions.userLoginFail()),
+        userLoginSuccess: (userInfor) => dispatch(actions.userLoginSuccess(userInfor))
     };
 };
 
