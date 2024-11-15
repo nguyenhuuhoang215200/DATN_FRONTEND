@@ -4,20 +4,46 @@
     z-index: 99;
     display: flex;
     justify-content: space-between;
-    background-color: $colormain;
+    background: linear-gradient(to right, #81d4fa, #e1f5fe);
+    /* Màu gradient */
     color: $common-text-color;
     height: 40px;
+    /* Chiều cao của header */
     position: relative;
+
     .btn-logout {
         color: $common-text-color;
-        line-height: 40px;
         height: 40px;
-        padding: 0 10px;
+        /* Đặt chiều cao của nút thành 40px */
+        width: 40px;
+        /* Đảm bảo nút có chiều rộng cố định */
+        padding: 0;
+        /* Bỏ padding để đảm bảo nút nhỏ gọn */
+        font-size: 16px;
+        /* Điều chỉnh kích thước chữ */
+        line-height: 40px;
+        /* Căn giữa chữ và biểu tượng theo chiều dọc */
+        border-radius: 50%;
+        /* Làm nút tròn để đẹp hơn */
+        display: flex;
+        justify-content: center;
+        /* Căn giữa nội dung */
+        align-items: center;
+        /* Căn giữa nội dung */
+        transition: background-color 0.3s, transform 0.3s;
+        /* Thêm hiệu ứng khi hover */
+        cursor: pointer;
+
         &:hover {
             background-color: darken($colormain, 5);
+            /* Tạo hiệu ứng đổi màu khi hover */
+            transform: scale(1.1);
+            /* Tăng kích thước nút khi hover */
         }
+
         i {
-            font-size: $base-size + 1px;
+            font-size: 18px;
+            /* Giảm kích thước biểu tượng */
         }
     }
 }

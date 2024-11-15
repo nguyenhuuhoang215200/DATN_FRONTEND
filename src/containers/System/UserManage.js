@@ -6,6 +6,8 @@ import UserService from "../../services/UserService";
 class UserManage extends Component {
   state = {
     users: [],
+    showDeleteModal: false,
+    userToDelete: null, // Lưu id người dùng cần xóa
   };
 
   async componentDidMount() {
@@ -20,8 +22,42 @@ class UserManage extends Component {
     }
   }
 
+  // Mở modal và lưu thông tin người dùng cần xóa
+  openDeleteModal = (userId) => {
+    this.setState({
+      showDeleteModal: true,
+      userToDelete: userId,
+    });
+  };
+
+  // Đóng modal
+  closeDeleteModal = () => {
+    this.setState({
+      showDeleteModal: false,
+      userToDelete: null,
+    });
+  };
+
+  // Xử lý xóa người dùng
+  handleDelete = async () => {
+    const { userToDelete } = this.state;
+    if (userToDelete) {
+      try {
+        await UserService.deleteUser(userToDelete);
+        this.setState((prevState) => ({
+          users: prevState.users.filter((user) => user.id !== userToDelete),
+          showDeleteModal: false,
+          userToDelete: null,
+        }));
+        alert("User deleted successfully!"); // Bạn có thể thay thế bằng toast hoặc modal
+      } catch (error) {
+        console.error("Error deleting user", error);
+      }
+    }
+  };
+
   render() {
-    const { users } = this.state;
+    const { users, showDeleteModal } = this.state;
 
     return (
       <div className="users_container">
@@ -48,14 +84,14 @@ class UserManage extends Component {
                     <td>
                       {/* Nút "Sửa" */}
                       <button
-                        //onClick={() => handleEdit(user.id)}
+                        // onClick={() => handleEdit(user.id)}
                         className="btn-edit"
                       >
                         Edit
                       </button>
                       {/* Nút "Xóa" */}
                       <button
-                        //onClick={() => handleDelete(user.id)}
+                        onClick={() => this.openDeleteModal(user.id)}
                         className="btn-delete"
                       >
                         Delete
@@ -65,7 +101,7 @@ class UserManage extends Component {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="text-center">
+                  <td colSpan="5" className="text-center">
                     No users found
                   </td>
                 </tr>
@@ -73,6 +109,23 @@ class UserManage extends Component {
             </tbody>
           </table>
         </div>
+
+        {/* Modal xác nhận xóa */}
+        {showDeleteModal && (
+          <div className="delete-modal">
+            <div className="modal-content">
+              <h3>Bạn có đồng ý xóa tài khỏa này không?</h3>
+              <div className="modal-actions">
+                <button onClick={this.handleDelete} className="btn-confirm">
+                  Đồng ý
+                </button>
+                <button onClick={this.closeDeleteModal} className="btn-cancel">
+                  Hủy
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

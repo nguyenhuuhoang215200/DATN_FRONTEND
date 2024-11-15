@@ -1,27 +1,212 @@
+.users_container {
+  padding: 30px;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: bold;
+  color: #4a4a4a;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.User-table {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+}
+
 #customers {
-  font-family: Arial, Helvetica, sans-serif;
-  border-collapse: collapse;
   width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
 }
 
-#customers td,
-#customers th {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-#customers tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
-#customers tr:hover {
-  background-color: #ddd;
+#customers thead {
+  background-color: #000000;
+  color: #fff;
 }
 
 #customers th {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  text-align: left;
-  background-color: #04aa6d;
+  padding: 15px;
+  font-weight: 600;
+  text-align: center;
+  /* Thêm thuộc tính này để căn giữa chữ */
+  font-size: 16px;
+}
+
+#customers td {
+  padding: 15px;
+  font-size: 15px;
+  color: #555;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: center;
+  /* Thêm thuộc tính này để căn giữa chữ */
+}
+
+#customers tbody tr {
+  transition: background-color 0.2s;
+}
+
+#customers tbody tr:hover {
+  background-color: #e0f7fa;
+}
+
+/* Cập nhật cho nút Edit và Delete */
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  /* Điều này sẽ tạo khoảng cách giữa các nút */
+  justify-content: center;
+}
+
+/* Nút chỉnh sửa */
+.btn-edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+  margin-right: 10px;
+  /* Thêm margin-right để cách xa nút Delete */
+}
+
+/* Nút xóa */
+.btn-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+}
+
+/* Nút "Edit" và "Delete" hover */
+.btn-edit:hover {
+  background-color: #005a50;
+  transform: translateY(-2px);
+}
+
+.btn-delete:hover {
+  background-color: #c62828;
+  transform: translateY(-2px);
+}
+
+
+/* Hiển thị biểu tượng và khoảng cách */
+.btn-edit i,
+.btn-delete i {
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+/* Hiển thị thông báo không có người dùng */
+.no-users {
+  font-size: 18px;
+  color: #999;
+  text-align: center;
+  padding: 20px;
+}
+
+/////////////
+/* Modal xác nhận xóa */
+.delete-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  /* Giảm độ tối của background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: opacity 0.3s ease-in-out;
+  /* Thêm hiệu ứng fade-in */
+}
+
+.modal-content {
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  /* Bo góc modal */
+  width: 240px;
+  /* Giảm chiều rộng modal xuống 1 nửa */
+  max-width: 90%;
+  /* Đảm bảo modal không quá rộng trên màn hình nhỏ */
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease-in-out;
+  /* Thêm hiệu ứng vào modal */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-actions {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-around;
+  /* Căn giữa các nút */
+  gap: 8px;
+  /* Giảm khoảng cách giữa các nút */
+}
+
+.btn-confirm,
+.btn-cancel {
+  padding: 8px 16px;
+  /* Giảm kích thước nút */
+  font-size: 14px;
+  /* Giảm kích thước chữ trong nút */
+  font-weight: 500;
+  border-radius: 6px;
+  /* Bo góc nút nhỏ hơn */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  /* Thêm hiệu ứng hover */
+  border: none;
+}
+
+.btn-confirm {
+  background-color: #e53935;
   color: white;
+}
+
+.btn-confirm:hover {
+  background-color: #c62828;
+  transform: scale(1.05);
+}
+
+.btn-cancel {
+  background-color: #4caf50;
+  color: white;
+}
+
+.btn-cancel:hover {
+  background-color: #388e3c;
+  transform: scale(1.05);
 }
