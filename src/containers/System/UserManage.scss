@@ -106,7 +106,6 @@
   transform: translateY(-2px);
 }
 
-
 /* Hiển thị biểu tượng và khoảng cách */
 .btn-edit i,
 .btn-delete i {
@@ -145,7 +144,7 @@
   padding: 15px;
   border-radius: 10px;
   /* Bo góc modal */
-  width: 240px;
+  //width: 540px;
   /* Giảm chiều rộng modal xuống 1 nửa */
   max-width: 90%;
   /* Đảm bảo modal không quá rộng trên màn hình nhỏ */
