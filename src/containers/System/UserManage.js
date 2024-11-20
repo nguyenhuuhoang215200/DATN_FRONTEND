@@ -2,14 +2,15 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import "./UserManage.scss";
 import UserService from "../../services/UserService";
-import ModalUser from "./ModalUser";
+import ModalCreateUser from "./ModalCreateUser";
+import ModaldeleteUser from "./ModaldeleteUser";
 
 class UserManage extends Component {
   state = {
     users: [],
-    //showDeleteModal: false,
+    showDeleteModal: false,
     showCreateModal: false,
-    //userToDelete: null, // Lưu id người dùng cần xóa
+    userToDelete: null, // Lưu id người dùng cần xóa
   };
 
   async componentDidMount() {
@@ -27,38 +28,35 @@ class UserManage extends Component {
     }
   };
   // Mở modal và lưu thông tin người dùng cần xóa
-  // openDeleteModal = (userId) => {
-  //   this.setState({
-  //     showDeleteModal: true,
-  //     userToDelete: userId,
-  //   });
-  // };
+  openDeleteModal = (userId) => {
+    this.setState({
+      showDeleteModal: true,
+      userToDelete: userId,
+    });
+  };
+  closeDeleteUser = () => {
+    this.setState({
+      showDeleteModal: !this.state.showDeleteModal,
+    });
+  };
 
-  // Đóng modal
-  // closeDeleteModal = () => {
-  //   this.setState({
-  //     showDeleteModal: false,
-  //     userToDelete: null,
-  //   });
-  // };
+  handleDeleteUser = async () => {
+    const { userToDelete } = this.state;
+    if (userToDelete) {
+      try {
+        await UserService.deleteUser(userToDelete);
 
-  // Xử lý xóa người dùng
-  // handleDelete = async () => {
-  //   const { userToDelete } = this.state;
-  //   if (userToDelete) {
-  //     try {
-  //       await UserService.deleteUser(userToDelete);
-  //       this.setState((prevState) => ({
-  //         users: prevState.users.filter((user) => user.id !== userToDelete),
-  //         showDeleteModal: false,
-  //         userToDelete: null,
-  //       }));
-  //       alert("User deleted successfully!"); // Bạn có thể thay thế bằng toast hoặc modal
-  //     } catch (error) {
-  //       console.error("Error deleting user", error);
-  //     }
-  //   }
-  // };
+        this.setState((prevState) => ({
+          users: prevState.users.filter((user) => user.id !== userToDelete),
+          showDeleteModal: false,
+          userToDelete: null,
+        }));
+        alert("User deleted successfully!"); // Bạn có thể thay thế bằng toast hoặc modal
+      } catch (error) {
+        console.error("Error deleting user", error);
+      }
+    }
+  };
   createNewUser = async (dataCreateUser) => {
     try {
       // Gửi yêu cầu đến server
@@ -71,6 +69,7 @@ class UserManage extends Component {
       } else {
         alert("Tạo người dùng thành công!"); // Thông báo khi tạo thành công
         await this.getAllUsers(); // Cập nhật danh sách người dùng
+        this.closeAddNewUser();
       }
     } catch (error) {
       // Xử lý lỗi nếu server trả về 400 Bad Request
@@ -86,30 +85,34 @@ class UserManage extends Component {
     }
   };
 
-  handleAddNewUsers = () => {
+  openAddNewUser = () => {
     this.setState({
       showCreateModal: true,
     });
   };
-  togleUserModal = () => {
+  closeAddNewUser = () => {
     this.setState({
       showCreateModal: !this.state.showCreateModal,
     });
   };
   render() {
-    const { users, showDeleteModal } = this.state;
-
+    const users = this.state.users;
     return (
       <div className="users_container">
-        <ModalUser
+        <ModalCreateUser
           isOpen={this.state.showCreateModal}
-          togleUserModal={this.togleUserModal}
+          closeAddNewUser={this.closeAddNewUser}
           createNewUser={this.createNewUser}
-        ></ModalUser>
+        ></ModalCreateUser>
+        <ModaldeleteUser
+          isOpen={this.state.showDeleteModal}
+          closeDeleteUser={this.closeDeleteUser}
+          handleDeleteUser={this.handleDeleteUser}
+        ></ModaldeleteUser>
         <div className="title text-center">Manage User</div>
         <div className="mx-1">
           <button
-            onClick={this.handleAddNewUsers}
+            onClick={this.openAddNewUser}
             className="btn-add-user btn-primary"
           >
             Add new users
@@ -144,7 +147,7 @@ class UserManage extends Component {
                       </button>
                       {/* Nút "Xóa" */}
                       <button
-                        // onClick={() => this.openDeleteModal(user.id)}
+                        onClick={() => this.openDeleteModal(user.id)}
                         className="btn-delete"
                       >
                         Delete
@@ -162,23 +165,6 @@ class UserManage extends Component {
             </tbody>
           </table>
         </div>
-
-        {/* Modal xác nhận xóa */}
-        {showDeleteModal && (
-          <div className="delete-modal">
-            <div className="modal-content">
-              <h3>Bạn có đồng ý xóa tài khỏa này không?</h3>
-              <div className="modal-actions">
-                <button onClick={this.handleDelete} className="btn-confirm">
-                  Đồng ý
-                </button>
-                <button onClick={this.closeDeleteModal} className="btn-cancel">
-                  Hủy
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     );
   }

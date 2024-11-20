@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 
-class ModalUser extends Component {
+class ModalCreateUser extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -18,8 +18,8 @@ class ModalUser extends Component {
   }
 
   toggle = () => {
-    if (this.props.toggleUserModal) {
-      this.props.toggleUserModal();
+    if (this.props.isOpen) {
+      this.props.closeAddNewUser(); // truyền về user managel để tắt modal
     }
   };
 
@@ -324,4 +324,4 @@ class ModalUser extends Component {
   }
 }
 
-export default ModalUser;
+export default ModalCreateUser;

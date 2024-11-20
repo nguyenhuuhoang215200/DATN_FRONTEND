@@ -8,8 +8,16 @@ const getAllUsers = (id) => {
 const createNewUserService = (dataCreateUser) => {
   return axios.post("/api/create-user", dataCreateUser);
 };
+const deleteUser = (idUserDelete) => {
+  console.log("id cần xóa====", idUserDelete);
+  return axios.delete(`/api/delete-user`, {
+    data: { id: idUserDelete },
+  });
+};
+
 export default {
   handleLogin,
   getAllUsers,
   createNewUserService,
+  deleteUser,
 };
