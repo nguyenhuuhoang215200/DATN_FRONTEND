@@ -16,8 +16,21 @@ class ModalCreateUser extends Component {
       errors: {}, // Dùng để lưu trữ các lỗi
     };
   }
-
+  resetForm = () => {
+    this.setState({
+      email: "",
+      password: "",
+      firstname: "",
+      lastname: "",
+      address: "",
+      phonenumber: "",
+      gender: "",
+      roleId: "",
+      errors: {}, // Xóa toàn bộ lỗi
+    });
+  };
   toggle = () => {
+    this.resetForm();
     if (this.props.isOpen) {
       this.props.closeAddNewUser(); // truyền về user managel để tắt modal
     }
@@ -25,7 +38,13 @@ class ModalCreateUser extends Component {
 
   handleInputChange = (e) => {
     const { name, value } = e.target;
-    this.setState({ [name]: value });
+    this.setState((prevState) => {
+      const errors = { ...prevState.errors }; // Lấy bản sao của các lỗi hiện tại
+      if (errors[name]) {
+        delete errors[name]; // Xóa lỗi của trường đang được nhập
+      }
+      return { [name]: value, errors }; // Cập nhật giá trị và lỗi
+    });
   };
 
   // Hàm validate để kiểm tra tất cả các trường
@@ -117,6 +136,7 @@ class ModalCreateUser extends Component {
     } else {
       console.log("Form data submitted:", this.state);
       this.props.createNewUser(this.state);
+      this.resetForm();
       // Xử lý dữ liệu sau khi xác thực thành công
     }
   };

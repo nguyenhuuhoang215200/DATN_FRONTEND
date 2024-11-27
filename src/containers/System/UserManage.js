@@ -4,12 +4,15 @@ import "./UserManage.scss";
 import UserService from "../../services/UserService";
 import ModalCreateUser from "./ModalCreateUser";
 import ModaldeleteUser from "./ModaldeleteUser";
+import ModalEditUser from "./ModalEditUser";
 
 class UserManage extends Component {
   state = {
     users: [],
     showDeleteModal: false,
     showCreateModal: false,
+    showEditModal: false,
+    userToEdit: null,
     userToDelete: null, // Lưu id người dùng cần xóa
   };
 
@@ -26,6 +29,18 @@ class UserManage extends Component {
     } catch (error) {
       console.error("Error fetching users", error);
     }
+  };
+  openEditUser = (user) => {
+    console.log("======0", user);
+    this.setState({
+      showEditModal: true,
+      userToEdit: user, // Truyền toàn bộ thông tin người dùng cần sửa
+    });
+  };
+  closeEditUser = () => {
+    this.setState({
+      showEditModal: null,
+    });
   };
   // Mở modal và lưu thông tin người dùng cần xóa
   openDeleteModal = (userId) => {
@@ -44,7 +59,7 @@ class UserManage extends Component {
     const { userToDelete } = this.state;
     if (userToDelete) {
       try {
-        await UserService.deleteUser(userToDelete);
+        await UserService.deleteUserSerivce(userToDelete);
 
         this.setState((prevState) => ({
           users: prevState.users.filter((user) => user.id !== userToDelete),
@@ -54,6 +69,33 @@ class UserManage extends Component {
         alert("User deleted successfully!"); // Bạn có thể thay thế bằng toast hoặc modal
       } catch (error) {
         console.error("Error deleting user", error);
+      }
+    }
+  };
+  handleEditUser = async (DataEditUser) => {
+    try {
+      // Gửi yêu cầu đến server
+      let response = await UserService.editUserService(DataEditUser);
+
+      // Kiểm tra phản hồi từ server
+      console.log("response create user", response.data.errcode);
+      if (response.data.errcode !== 0) {
+        alert(response.data.errmessage); // Hiển thị lỗi từ server
+      } else {
+        alert("Edit người dùng thành công!"); // Thông báo khi tạo thành công
+        await this.getAllUsers(); // Cập nhật danh sách người dùng
+        this.closeEditUser();
+      }
+    } catch (error) {
+      // Xử lý lỗi nếu server trả về 400 Bad Request
+      if (error.response && error.response.status === 400) {
+        const serverError = error.response.data; // Lấy dữ liệu lỗi từ server
+        alert(serverError.errmessage || "Đã xảy ra lỗi, vui lòng kiểm tra!");
+        console.log("Chi tiết lỗi từ server:", serverError);
+      } else {
+        // Lỗi không từ server hoặc không rõ nguyên nhân
+        alert("Lỗi không xác định, vui lòng kiểm tra!");
+        console.log("Lỗi không xác định:", error.message);
       }
     }
   };
@@ -109,6 +151,12 @@ class UserManage extends Component {
           closeDeleteUser={this.closeDeleteUser}
           handleDeleteUser={this.handleDeleteUser}
         ></ModaldeleteUser>
+        <ModalEditUser
+          isOpen={this.state.showEditModal}
+          closeEditUser={this.closeEditUser}
+          handleEditUser={this.handleEditUser}
+          userToEdit={this.state.userToEdit}
+        ></ModalEditUser>
         <div className="title text-center">Manage User</div>
         <div className="mx-1">
           <button
@@ -140,7 +188,7 @@ class UserManage extends Component {
                     <td>
                       {/* Nút "Sửa" */}
                       <button
-                        // onClick={() => handleEdit(user.id)}
+                        onClick={() => this.openEditUser(user)}
                         className="btn-edit"
                       >
                         Edit
